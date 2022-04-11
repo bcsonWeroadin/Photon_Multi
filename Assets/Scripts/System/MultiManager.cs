@@ -15,7 +15,7 @@ public class MultiManager : MonoBehaviourPunCallbacks
 
     [SerializeField] private CameraManager MainCamera;
     [SerializeField] private GameObject StartCanvas;
-
+    [SerializeField] private ChatManager chatManager;
 
     private string gameVersion = "1"; // 게임 버전
 
@@ -104,20 +104,23 @@ public class MultiManager : MonoBehaviourPunCallbacks
     {
         this.connectionInfoText.text = "방 참가 성공!";
 
+        // 채팅 접속시도
+        chatManager.Connect();
+
         //모든 룸 참가자가 Main 씬을 로드하게 함
         //PhotonNetwork.LoadLevel("Main");
 
         // 호스트가 아니면 스폰
-/*        if(!PhotonNetwork.IsMasterClient)
-        {
-            // Resources 폴더에 프리팹이 있어야 한다
-            //PlayerInstance = PhotonNetwork.Instantiate(this.playerPrefab.name, Vector3.zero, Quaternion.identity);
-            PlayerInstance = PhotonNetwork.Instantiate(this.playerPrefab.name, this.transform.position, this.transform.localRotation);
+        /*        if(!PhotonNetwork.IsMasterClient)
+                {
+                    // Resources 폴더에 프리팹이 있어야 한다
+                    //PlayerInstance = PhotonNetwork.Instantiate(this.playerPrefab.name, Vector3.zero, Quaternion.identity);
+                    PlayerInstance = PhotonNetwork.Instantiate(this.playerPrefab.name, this.transform.position, this.transform.localRotation);
 
-            MainCamera.init(ref PlayerInstance);
+                    MainCamera.init(ref PlayerInstance);
 
-            //PhotonNetwork.Instantiate(this.playerPrefab.name, Vector3.zero, Quaternion.identity);
-        }*/
+                    //PhotonNetwork.Instantiate(this.playerPrefab.name, Vector3.zero, Quaternion.identity);
+                }*/
 
         // 새로 생성후 원래것 삭제
         //PlayerInstance = PhotonNetwork.Instantiate(this.playerPrefab.name, playerOrigin.transform.position, playerOrigin.transform.localRotation);
