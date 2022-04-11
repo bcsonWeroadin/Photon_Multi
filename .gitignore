@@ -1,0 +1,13 @@
+.vsconfig
+*.csproj
+*.sln
+obj/
+.vs/
+Logs/
+Temp/
+Library/
+UserSettings/
+Assembly-CSharp.csproj
+Assembly-CSharp-Editor.csproj
+Photon_Multi_Test.sln
+Temp/
