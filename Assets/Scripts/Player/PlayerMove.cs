@@ -17,8 +17,10 @@ public class PlayerMove : MonoBehaviour
     public PhotonView PV;
 
     public void Start()
+    //private void Awake()
     {
        
+
         //m_mainCamera = Camera.main;
         m_mainCamera = GameObject.Find("Main Camera")?.GetComponent<Camera>();
 
@@ -26,11 +28,17 @@ public class PlayerMove : MonoBehaviour
         PV = GetComponent<PhotonView>();
         m_animator = GetComponent<Animator>();
 
-        this.UpdateAsObservable()
+        if (!PV.IsMine)
+        {
+            Debug.Log("내것이 아님");
+            return;
+        }
+
+            this.UpdateAsObservable()
         //this.FixedUpdateAsObservable()                                            // 마우스 클릭 이벤트가 안들어옴
             .Where(_ => Input.GetMouseButtonDown(0))                                // 마우스 왼쪽클릭일때
             .Where(_ => !EventSystem.current.IsPointerOverGameObject())             // ui를 클릭한게 아닐때
-            .Where(_ =>  PV.IsMine)             
+            //.Where(_ =>  PV.IsMine)             
             .Select(_ => m_mainCamera.ScreenPointToRay(Input.mousePosition))        // 카메라에서 레이정보
             .Subscribe(ray => 
                 {
@@ -45,7 +53,8 @@ public class PlayerMove : MonoBehaviour
                 });
 
         this.UpdateAsObservable()
-            .Where(_ => PV.IsMine && m_animator)
+            .Where(_ => m_animator)
+            //.Where(_ => PV.IsMine)
             //.Where(_ => m_navAgent.velocity != Vector3.zero)                    // 네비 메쉬의 속도가 0이 아니면               
             .Select(_ => m_navAgent.velocity)                                   // 네비 메쉬의 속도가 변화시               
             .DistinctUntilChanged()

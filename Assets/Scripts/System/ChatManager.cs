@@ -168,6 +168,12 @@ public class ChatManager : MonoBehaviour , IChatClientListener
             Debug.Log("senders: " + senders[senders.Length - 1]);           // 마지막으로 보낸 사람
             Debug.Log("messages: " + messages[messages.Length - 1]);        // 마지막으로 보낸 메시지
 
+            if ( UserName.Equals(senders[senders.Length - 1]) )
+            {
+
+            }
+
+
 
         }
         //throw new System.NotImplementedException();
