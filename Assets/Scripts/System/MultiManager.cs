@@ -104,9 +104,6 @@ public class MultiManager : MonoBehaviourPunCallbacks
     {
         this.connectionInfoText.text = "방 참가 성공!";
 
-        // 채팅 접속시도
-        chatManager.Connect();
-
         //모든 룸 참가자가 Main 씬을 로드하게 함
         //PhotonNetwork.LoadLevel("Main");
 
@@ -122,7 +119,7 @@ public class MultiManager : MonoBehaviourPunCallbacks
                     //PhotonNetwork.Instantiate(this.playerPrefab.name, Vector3.zero, Quaternion.identity);
                 }*/
 
-        // 새로 생성후 원래것 삭제
+        // 새로 생성후 원래것 삭제, Resources 폴더안에 있는 프리팹을 읽어서 스폰시킴
         //PlayerInstance = PhotonNetwork.Instantiate(this.playerPrefab.name, playerOrigin.transform.position, playerOrigin.transform.localRotation);
         PlayerInstance = PhotonNetwork.Instantiate("Player 1", playerOrigin.transform.position, playerOrigin.transform.localRotation);
         Destroy(playerOrigin);
@@ -134,6 +131,11 @@ public class MultiManager : MonoBehaviourPunCallbacks
 
         //PhotonNetwork.Instantiate(Path.Combine(@"..\Prefabs", this.playerPrefab.name), Vector3.zero, Quaternion.identity);
         //PhotonNetwork.Instantiate(this.playerPrefab.name, Vector3.zero, Quaternion.identity);
+
+
+
+        // 채팅 접속시도
+        chatManager.Connect();
 
     }
 }

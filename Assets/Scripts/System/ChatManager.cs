@@ -16,23 +16,16 @@ public class ChatManager : MonoBehaviour , IChatClientListener
 
     private string currentChannelName;
 
-    protected internal ChatAppSettings chatAppSettings;
-
-    private bool IsConnected;
+    //protected internal ChatAppSettings chatAppSettings;
 
     private void Start()
     {
         DontDestroyOnLoad(this);
         UserName = "User" + Random.Range(1, 101);
         
-/*#if PHOTON_UNITY_NETWORKING
-        this.chatAppSettings = PhotonNetwork.PhotonServerSettings.AppSettings.GetChatSettings();
-#endif*/
-
         //bool appIdPresent = !string.IsNullOrEmpty(this.chatAppSettings.AppIdChat);
 
-        currentChannelName = "111";
-        IsConnected = false;
+        currentChannelName = "abc";
 
     }
 
@@ -64,28 +57,26 @@ public class ChatManager : MonoBehaviour , IChatClientListener
     {
         //Debug.Log(PhotonNetwork.PhotonServerSettings.AppSettings.AppIdChat);
 
-
-
         this.chatClient = new ChatClient(this);
-#if !UNITY_WEBGL
-            this.chatClient.UseBackgroundWorkerForSending = true;
-#endif
-        chatClient.UseBackgroundWorkerForSending = true;
+
+    #if !UNITY_WEBGL
+        this.chatClient.UseBackgroundWorkerForSending = true;
+    #endif
+        //chatClient.UseBackgroundWorkerForSending = true;
 
         chatClient.Connect(PhotonNetwork.PhotonServerSettings.AppSettings.AppIdChat, "1.0", new AuthenticationValues(UserName));
         AddLine(string.Format("연결시도", UserName));
         Debug.Log("유저이름: "+ UserName);
         // 지정한 채널명으로 접속
-        chatClient.Subscribe(new string[] { currentChannelName }, 10);
 
-
-
-        /*        this.chatClient.ConnectUsingSettings(this.chatAppSettings);
+        /*        
+                 this.chatClient.ConnectUsingSettings(this.chatAppSettings);
 
                 this.ChannelToggleToInstantiate.gameObject.SetActive(false);
                 Debug.Log("Connecting as: " + this.UserName);
 
-                this.ConnectingLabel.SetActive(true);*/
+                this.ConnectingLabel.SetActive(true);
+        */
     }
 
     // 현재 채팅 상태를 출력해줄 UI.Text
@@ -98,10 +89,15 @@ public class ChatManager : MonoBehaviour , IChatClientListener
     public void OnClickSendButton()
     {
         Debug.Log("보내기 버튼 클릭");
-        if ( !(string.IsNullOrEmpty(m_InputChat.text)) )
+            //this.chatClient.PublishMessage(currentChannelName, m_InputChat.text.ToString());
+
+        if ( !string.IsNullOrEmpty(m_InputChat.text) )
         {
             this.chatClient.PublishMessage(currentChannelName, m_InputChat.text.ToString());
+            Debug.Log("채팅 전송");
+
         }
+
 
         m_InputChat.text = "";
     }
@@ -120,7 +116,9 @@ public class ChatManager : MonoBehaviour , IChatClientListener
         AddLine("서버에 연결이 끊어졌습니다.");
         Debug.Log("채팅 서버 연결 끊어짐");
 
-        IsConnected = false;
+        //Connect();
+        //Debug.Log("재연결");
+
         //throw new System.NotImplementedException();
     }
 
@@ -128,16 +126,18 @@ public class ChatManager : MonoBehaviour , IChatClientListener
     {
         AddLine("서버에 연결 되었습니다.");
 
-        Debug.Log("채팅 서버 연결됨");
+        Debug.Log("채팅 메인 서버 연결됨");
 
-        IsConnected = true;
+        // 채팅 채널 접속
+        chatClient.Subscribe(new string[] { currentChannelName }, 10);
+
         //throw new System.NotImplementedException();
     }
 
     public void OnChatStateChange(ChatState state)
     {
         AddLine("OnChatStateChange = " + state);
-        Debug.Log("채팅 서버 연결됨");
+        //Debug.Log("채팅 서버 연결됨");
 
         //throw new System.NotImplementedException();
     }
@@ -160,11 +160,15 @@ public class ChatManager : MonoBehaviour , IChatClientListener
                 return;
             }
 
-            this.currentChannelName = channelName;
+            //this.currentChannelName = channelName;
             // 채널에 저장 된 모든 채팅 메세지를 불러온다.
             // 유저 이름과 채팅 내용이 한꺼번에 불러와진다.
-            //this.currentChannelText.text = channel.ToStringMessages();
-            Debug.Log("ShowChannel: " + currentChannelName);
+            this.outputText.text = channel.ToStringMessages();
+
+            Debug.Log("senders: " + senders[senders.Length - 1]);           // 마지막으로 보낸 사람
+            Debug.Log("messages: " + messages[messages.Length - 1]);        // 마지막으로 보낸 메시지
+
+
         }
         //throw new System.NotImplementedException();
     }
