@@ -10,13 +10,19 @@ public class ChatManager : MonoBehaviour , IChatClientListener
 {
     [SerializeField] private TMP_InputField m_InputChat;
     [SerializeField] private TMP_Text outputText;
+    [SerializeField] private MultiManager multi;
+    [SerializeField] private PhotonView PV;
 
     public ChatClient chatClient;
     public string UserName { get; set; }
 
     private string currentChannelName;
-
+    private TMP_Text PlayerBubbleText;
+    private GameObject chatView;
+    private string m_message;
+    private GameObject PlayerInstance;
     //protected internal ChatAppSettings chatAppSettings;
+
 
     private void Start()
     {
@@ -26,6 +32,7 @@ public class ChatManager : MonoBehaviour , IChatClientListener
         //bool appIdPresent = !string.IsNullOrEmpty(this.chatAppSettings.AppIdChat);
 
         currentChannelName = "abc";
+        PV = GetComponent<PhotonView>();
 
     }
 
@@ -67,6 +74,7 @@ public class ChatManager : MonoBehaviour , IChatClientListener
         chatClient.Connect(PhotonNetwork.PhotonServerSettings.AppSettings.AppIdChat, "1.0", new AuthenticationValues(UserName));
         AddLine(string.Format("연결시도", UserName));
         Debug.Log("유저이름: "+ UserName);
+
         // 지정한 채널명으로 접속
 
         /*        
@@ -77,6 +85,14 @@ public class ChatManager : MonoBehaviour , IChatClientListener
 
                 this.ConnectingLabel.SetActive(true);
         */
+
+
+
+        // 말풍선 가져오기
+        chatView = multi?.PlayerInstance.transform.Find("ChatView").gameObject;
+        //chatView.SetActive(false);
+        PlayerBubbleText = chatView?.transform.GetChild(0).GetChild(0).GetComponent<TMP_Text>();
+        PlayerBubbleText.text = "";
     }
 
     // 현재 채팅 상태를 출력해줄 UI.Text
@@ -131,6 +147,7 @@ public class ChatManager : MonoBehaviour , IChatClientListener
         // 채팅 채널 접속
         chatClient.Subscribe(new string[] { currentChannelName }, 10);
 
+
         //throw new System.NotImplementedException();
     }
 
@@ -165,11 +182,14 @@ public class ChatManager : MonoBehaviour , IChatClientListener
             // 유저 이름과 채팅 내용이 한꺼번에 불러와진다.
             this.outputText.text = channel.ToStringMessages();
 
-            Debug.Log("senders: " + senders[senders.Length - 1]);           // 마지막으로 보낸 사람
-            Debug.Log("messages: " + messages[messages.Length - 1]);        // 마지막으로 보낸 메시지
+/*            Debug.Log("senders: " + senders[senders.Length - 1]);           // 마지막으로 보낸 사람
+            Debug.Log("messages: " + messages[messages.Length - 1]);        // 마지막으로 보낸 메시지*/
 
             if ( UserName.Equals(senders[senders.Length - 1]) )
             {
+                m_message = messages[messages.Length - 1].ToString();
+                multi?.PlayerInstance.GetComponent<PlayerController>().ShowSpeechBubble(m_message);
+                //PV.RPC("ShowSpeech", RpcTarget.All);
 
             }
 
@@ -178,6 +198,24 @@ public class ChatManager : MonoBehaviour , IChatClientListener
         }
         //throw new System.NotImplementedException();
     }
+/*
+    [PunRPC]
+    private void ShowSpeech()
+    {
+        StopCoroutine("ShowSpeechBubble");
+        PlayerBubbleText.text = m_message;
+        StartCoroutine("ShowSpeechBubble");
+    }
+
+    IEnumerator ShowSpeechBubble()
+    {
+        chatView.SetActive(true);
+
+        yield return new WaitForSeconds(5f);
+
+        chatView.SetActive(false);
+
+    }*/
 
     public void OnPrivateMessage(string sender, object message, string channelName)
     {

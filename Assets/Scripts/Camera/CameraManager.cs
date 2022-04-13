@@ -10,6 +10,11 @@ public class CameraManager : MonoBehaviour
 {
 	private GameObject m_player;
 
+	// 움직임 속도
+	[SerializeField]
+	public float MoveSpeed;
+
+
 	// The target we are following
 	[SerializeField]
 	public Transform target;
@@ -36,11 +41,12 @@ public class CameraManager : MonoBehaviour
 		target = m_player.transform;
 		PV = GetComponent<PhotonView>();
 
+		MoveSpeed = 3f;
 
 		this.UpdateAsObservable()
 			.Where(_ => target)
-			.Select(_ => target.position)
-			.DistinctUntilChanged()
+			//.Select(_ => target.position)
+			//.DistinctUntilChanged()
 			.Subscribe(_ => SmoothFollow());
 
 	}
@@ -75,6 +81,15 @@ public class CameraManager : MonoBehaviour
 
 		// Set the height of the camera
 		transform.position = new Vector3(transform.position.x, currentHeight, transform.position.z);
+
+		// 카메라 움직임 추가
+/*		var pos = target.position;
+		pos -= currentRotation * Vector3.forward * distance;
+
+		transform.position = Vector3.Lerp(transform.position, 
+				new Vector3(pos.x, currentHeight, pos.z),
+				Time.deltaTime * MoveSpeed);    */      
+		///////////////
 
 		// Always look at the target
 		transform.LookAt(target);

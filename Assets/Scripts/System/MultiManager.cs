@@ -24,7 +24,7 @@ public class MultiManager : MonoBehaviourPunCallbacks
 
     public Button joinButton; // 룸 접속 버튼
 
-    private GameObject PlayerInstance;
+    public GameObject PlayerInstance;
 
     // 게임 실행과 동시에 마스터 서버 접속 시도
     void Start()
@@ -43,7 +43,7 @@ public class MultiManager : MonoBehaviourPunCallbacks
         PhotonNetwork.GameVersion = this.gameVersion;
         //설정한 정보로 마스터 서버 접속 시도
         PhotonNetwork.ConnectUsingSettings();
-
+        //PhotonNetwork.NickName = "a" + Random.Range(1f,1111f);
 
         this.joinButton.interactable = false;
         this.connectionInfoText.text = "마스터 서버에 접속중...";
@@ -54,6 +54,9 @@ public class MultiManager : MonoBehaviourPunCallbacks
     {
         this.joinButton.interactable = true;
         this.connectionInfoText.text = "온라인 : 마스터 서버와 연결 됨";
+
+        // 자동으로 방에 접속
+        Connect();
     }
 
     // 마스터 서버 접속 실패시 자동 실행
